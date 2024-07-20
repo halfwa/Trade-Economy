@@ -1,4 +1,6 @@
-﻿namespace Trade.Catalog.Service.Entities
+﻿using Trade.Common;
+
+namespace Trade.Catalog.Service.Entities
 {
     public class Item: IEntity
     {

@@ -1,12 +1,7 @@
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization;
-using MongoDB.Bson.Serialization.Serializers;
-using MongoDB.Driver;
 using Trade.Catalog.Service.Entities;
-using Trade.Catalog.Service.Repositories;
-using Trade.Catalog.Service.Settings;
+using Trade.Common;
+using Trade.Common.Settings;
+
 
 var builder = WebApplication.CreateBuilder(args);
 

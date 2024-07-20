@@ -1,4 +1,4 @@
-﻿namespace Trade.Catalog.Service.Settings
+﻿namespace Trade.Common.Settings
 {
     public class MongoDbSettings
     {

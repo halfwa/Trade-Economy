@@ -2,10 +2,11 @@
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using Trade.Catalog.Service.Settings;
-using Trade.Catalog.Service.Entities;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
+using Trade.Common.Settings;
 
-namespace Trade.Catalog.Service.Repositories
+namespace Trade.Common.MongoDB
 {
     public static class Extensions
     {

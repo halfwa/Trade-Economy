@@ -1,4 +1,6 @@
-﻿namespace Trade.Catalog.Service.Entities
+﻿using System;
+
+namespace Trade.Common
 {
     public interface IEntity
     {

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Trade.Catalog.Service.Dtos;
 using Trade.Catalog.Service.Entities;
-using Trade.Catalog.Service.Repositories;
+using Trade.Common;
 
 namespace Trade.Catalog.Service.Controllers
 {
