@@ -9,9 +9,9 @@ namespace Trade.Catalog.Service.Controllers
     [Route("items")]
     public class ItemsController: ControllerBase
     {
-        private readonly IItemsRepository _itemsRepository;
+        private readonly IRepository<Item> _itemsRepository;
 
-        public ItemsController(IItemsRepository itemsRepository)
+        public ItemsController(IRepository<Item> itemsRepository)
         {
             _itemsRepository = itemsRepository;
         }
@@ -86,7 +86,7 @@ namespace Trade.Catalog.Service.Controllers
         }
 
         // DELETE /items/{id}
-        [HttpDelete]
+        [HttpDelete("{id:guid}")]
         public async Task<IActionResult> DeleteAsync(Guid id)
         {
             var item = await _itemsRepository.GetAsync(id);
