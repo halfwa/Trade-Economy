@@ -2,6 +2,8 @@ using Trade.Common.Settings;
 using Trade.Common;
 using Trade.Inventory.Service.Entities;
 using Trade.Inventory.Service.Clients;
+using Polly;
+using Polly.Timeout;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,7 +14,7 @@ builder.Services.AddControllers(options =>
     options.SuppressAsyncSuffixInActionNames = false;
 });
 
-// mongo db options
+// mongo db options 
 var serviceSettings = builder.Configuration.GetSection(nameof(ServiceSettings)).Get<ServiceSettings>();
 
 builder.Services.AddMongo()
@@ -21,7 +23,35 @@ builder.Services.AddMongo()
 builder.Services.AddHttpClient<CatalogClient>(client =>
 {
     client.BaseAddress = new Uri("https://localhost:5001");
-});
+})
+    .AddTransientHttpErrorPolicy(policyBuilder => policyBuilder.Or<TimeoutRejectedException>().WaitAndRetryAsync(
+        5,
+        retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))
+                        + TimeSpan.FromMilliseconds(new Random().Next(0, 1000)),
+        onRetry: (outcome, timespan, retryAttempt) =>
+        {
+            var serviceProvider = builder.Services.BuildServiceProvider();
+            serviceProvider.GetService<ILogger<CatalogClient>>()?
+                .LogWarning($"Delaying for {timespan.TotalSeconds} seconds, then making retry {retryAttempt}");
+        }
+    ))
+    .AddTransientHttpErrorPolicy(policyBuilder => policyBuilder.Or<TimeoutRejectedException>().CircuitBreakerAsync(
+        3,
+        TimeSpan.FromSeconds(15),
+        onBreak: (outcome, timespan) =>
+        {
+            var serviceProvider = builder.Services.BuildServiceProvider();
+            serviceProvider.GetService<ILogger<CatalogClient>>()?
+                .LogWarning($"Opening the circuit for {timespan.TotalSeconds} seconds...");
+        },
+        onReset: () =>
+        {
+            var serviceProvider = builder.Services.BuildServiceProvider();
+            serviceProvider.GetService<ILogger<CatalogClient>>()?
+                .LogWarning($"Closing the circuit...");
+        }
+    ))
+    .AddPolicyHandler(Policy.TimeoutAsync<HttpResponseMessage>(1));
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
