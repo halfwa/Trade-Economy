@@ -1,4 +1,4 @@
-﻿namespace Trade.Catalog.Service.Settings
+﻿namespace rade.Common.Settings
 {
     public class RabbitMQSettings
     {
