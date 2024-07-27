@@ -23,7 +23,7 @@ builder.Services.AddMongo()
                 .AddMongoRepository<CatalogItem>("catalogItems")
                 .AddMassTransitWithRabbitMq();
 
-AddCatalogClient(builder);
+AddCatalogClient(builder.Services);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -36,6 +36,13 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+
+    app.UseCors(cpBuilder =>
+    {
+        cpBuilder.WithOrigins(builder.Configuration["AllowedOrigin"])
+            .AllowAnyHeader()
+            .AllowAnyHeader();
+    });
 }
 
 app.UseHttpsRedirection();
@@ -47,9 +54,9 @@ app.MapControllers();
 app.Run();
 
 
-static void AddCatalogClient(WebApplicationBuilder builder)
+static void AddCatalogClient(IServiceCollection services)
 {
-    builder.Services.AddHttpClient<CatalogClient>(client =>
+    services.AddHttpClient<CatalogClient>(client =>
     {
         client.BaseAddress = new Uri("https://localhost:5001");
     })
@@ -59,7 +66,7 @@ static void AddCatalogClient(WebApplicationBuilder builder)
                         + TimeSpan.FromMilliseconds(new Random().Next(0, 1000)),
         onRetry: (outcome, timespan, retryAttempt) =>
         {
-            var serviceProvider = builder.Services.BuildServiceProvider();
+            var serviceProvider = services.BuildServiceProvider();
             serviceProvider.GetService<ILogger<CatalogClient>>()?
                 .LogWarning($"Delaying for {timespan.TotalSeconds} seconds, then making retry {retryAttempt}");
         }
@@ -69,13 +76,13 @@ static void AddCatalogClient(WebApplicationBuilder builder)
         TimeSpan.FromSeconds(15),
         onBreak: (outcome, timespan) =>
         {
-            var serviceProvider = builder.Services.BuildServiceProvider();
+            var serviceProvider = services.BuildServiceProvider();
             serviceProvider.GetService<ILogger<CatalogClient>>()?
                 .LogWarning($"Opening the circuit for {timespan.TotalSeconds} seconds...");
         },
         onReset: () =>
         {
-            var serviceProvider = builder.Services.BuildServiceProvider();
+            var serviceProvider = services.BuildServiceProvider();
             serviceProvider.GetService<ILogger<CatalogClient>>()?
                 .LogWarning($"Closing the circuit...");
         }

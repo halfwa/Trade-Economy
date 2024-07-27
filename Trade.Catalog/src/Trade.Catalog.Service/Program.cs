@@ -34,6 +34,13 @@ if (app.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage();
     app.UseSwagger();
     app.UseSwaggerUI();
+
+    app.UseCors(cpBuilder =>
+    {
+        cpBuilder.WithOrigins(builder.Configuration["AllowedOrigin"])
+            .AllowAnyHeader()
+            .AllowAnyHeader() ;
+    });
 }
 
 app.UseHttpsRedirection();
