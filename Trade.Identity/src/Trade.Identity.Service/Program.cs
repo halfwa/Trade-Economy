@@ -8,6 +8,7 @@ using MongoDB.Bson.Serialization.Serializers;
 using System;
 using Trade.Common.Settings;
 using Trade.Identity.Service.Entities;
+using Trade.Identity.Service.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,7 @@ var builder = WebApplication.CreateBuilder(args);
 BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
 var serviceSettings = builder.Configuration.GetSection(nameof(ServiceSettings)).Get<ServiceSettings>();
 var mongoDbSettings = builder.Configuration.GetSection(nameof(MongoDbSettings)).Get<MongoDbSettings>();
+var identityServerSettings = new IdentityServerSettings();
 
 builder.Services.AddDefaultIdentity<ApplicationUser>()
     .AddRoles<ApplicationRole>()
@@ -25,6 +27,12 @@ builder.Services.AddDefaultIdentity<ApplicationUser>()
         mongoDbSettings.ConnectionString,
         serviceSettings.ServiceName
     );
+
+builder.Services.AddIdentityServer()
+    .AddAspNetIdentity<ApplicationUser>()
+    .AddInMemoryApiScopes(identityServerSettings.ApiScopes)
+    .AddInMemoryClients(identityServerSettings.Clients)
+    .AddInMemoryIdentityResources(identityServerSettings.IdentityResources);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -42,6 +50,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();
+
+app.UseIdentityServer();
 
 app.UseAuthorization();
 

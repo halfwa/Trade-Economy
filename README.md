@@ -8,10 +8,13 @@ MongoDB
 
 MassTransit, RabbitMQ
 
-Timeouts, Retries with exp Backoff
-Circuit Breaker
+Identity Server
+
+Timeouts, Retries with exp Backoff,
+Circuit Breaker,
 CORS headers
 
 Microservices Security patterns: 
-OAuth 2.0 authorization
-OpenID Connect
+Token-based security(PKCE flow),
+OAuth 2.0 auth,
+OpenID Connect,
