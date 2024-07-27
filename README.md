@@ -10,5 +10,8 @@ MassTransit, RabbitMQ
 
 Timeouts, Retries with exp Backoff
 Circuit Breaker
-
 CORS headers
+
+Microservices Security patterns: 
+OAuth 2.0 authorization
+OpenID Connect
