@@ -1,4 +1,5 @@
 ﻿using MassTransit;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Trade.Catalog.Contracts;
 using Trade.Catalog.Service.Dtos;
@@ -9,6 +10,7 @@ namespace Trade.Catalog.Service.Controllers
 {
     [ApiController]
     [Route("items")]
+    [Authorize]
     public class ItemsController: ControllerBase
     {
         private readonly IRepository<Item> _itemsRepository;

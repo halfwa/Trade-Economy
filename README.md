@@ -18,3 +18,5 @@ Microservices Security patterns:
 Token-based security(PKCE flow),
 OAuth 2.0 auth,
 OpenID Connect,
+
+user-secrets

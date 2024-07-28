@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Trade.Common;
 using Trade.Inventory.Service.Clients;
 using Trade.Inventory.Service.Dtos;
@@ -8,6 +9,7 @@ namespace Trade.Inventory.Service.Controllers
 {
     [ApiController]
     [Route("items")]
+    [Authorize]
     public class ItemsController: ControllerBase
     {
         private readonly IRepository<InventoryItem> _inventoryItemsRepository;

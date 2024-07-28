@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
+    <UserSecretsId>e4438e78-a4f7-40c2-a3cd-b961936fa3c6</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -11,7 +12,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.0" />
     <PackageReference Include="Microsoft.Visualstudio.Web.Codegeneration.Design" Version="8.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
-    <PackageReference Include="Trade.Common" Version="1.0.2" />
+    <PackageReference Include="Trade.Common" Version="1.0.3" />
   </ItemGroup>
 
 </Project>

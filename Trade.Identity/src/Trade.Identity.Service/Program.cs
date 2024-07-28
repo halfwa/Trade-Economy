@@ -8,6 +8,7 @@ using MongoDB.Bson.Serialization.Serializers;
 using System;
 using Trade.Common.Settings;
 using Trade.Identity.Service.Entities;
+using Trade.Identity.Service.HostedServices;
 using Trade.Identity.Service.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,9 +19,11 @@ var builder = WebApplication.CreateBuilder(args);
 BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
 var serviceSettings = builder.Configuration.GetSection(nameof(ServiceSettings)).Get<ServiceSettings>();
 var mongoDbSettings = builder.Configuration.GetSection(nameof(MongoDbSettings)).Get<MongoDbSettings>();
-var identityServerSettings = new IdentityServerSettings();
+var identityServerSettings = builder.Configuration.GetSection(nameof(IdentityServerSettings)).Get<IdentityServerSettings>();
 
-builder.Services.AddDefaultIdentity<ApplicationUser>()
+builder.Services
+    .Configure<IdentitySettings>(builder.Configuration.GetSection(nameof(IdentitySettings)))
+    .AddDefaultIdentity<ApplicationUser>()
     .AddRoles<ApplicationRole>()
     .AddMongoDbStores<ApplicationUser, ApplicationRole, Guid>
     (
@@ -28,11 +31,20 @@ builder.Services.AddDefaultIdentity<ApplicationUser>()
         serviceSettings.ServiceName
     );
 
-builder.Services.AddIdentityServer()
+builder.Services.AddIdentityServer(options =>
+    {
+        options.Events.RaiseSuccessEvents = true;
+        options.Events.RaiseFailureEvents = true;
+        options.Events.RaiseErrorEvents = true;
+    })
     .AddAspNetIdentity<ApplicationUser>()
     .AddInMemoryApiScopes(identityServerSettings.ApiScopes)
+    .AddInMemoryApiResources(identityServerSettings.ApiResources)
     .AddInMemoryClients(identityServerSettings.Clients)
     .AddInMemoryIdentityResources(identityServerSettings.IdentityResources);
+
+builder.Services.AddLocalApiAuthentication();
+builder.Services.AddHostedService<IdentitySeedHostedService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

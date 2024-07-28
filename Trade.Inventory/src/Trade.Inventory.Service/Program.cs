@@ -5,6 +5,7 @@ using Polly;
 using Polly.Timeout;
 using Trade.Common.MongoDB;
 using Trade.Common.MassTransit;
+using Trade.Common.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,7 +22,8 @@ var serviceSettings = builder.Configuration.GetSection(nameof(ServiceSettings)).
 builder.Services.AddMongo()
                 .AddMongoRepository<InventoryItem>("inventoryItems")
                 .AddMongoRepository<CatalogItem>("catalogItems")
-                .AddMassTransitWithRabbitMq();
+                .AddMassTransitWithRabbitMq()
+                .AddJwtBearerAuthentication();
 
 AddCatalogClient(builder.Services);
 
@@ -47,6 +49,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

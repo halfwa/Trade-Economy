@@ -7,8 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.7" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
-    <PackageReference Include="Trade.Common" Version="1.0.2" />
+    <PackageReference Include="Trade.Common" Version="1.0.3" />
   </ItemGroup>
 
   <ItemGroup>

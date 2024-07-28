@@ -1,7 +1,9 @@
 using MassTransit;
 using MassTransit.Definition;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Trade.Catalog.Service.Entities;
 using Trade.Common;
+using Trade.Common.Identity;
 using Trade.Common.MassTransit;
 using Trade.Common.MongoDB;
 using Trade.Common.Settings;
@@ -21,7 +23,8 @@ var serviceSettings = builder.Configuration.GetSection(nameof(ServiceSettings)).
 
 builder.Services.AddMongo()
                 .AddMongoRepository<Item>("items")
-                .AddMassTransitWithRabbitMq();
+                .AddMassTransitWithRabbitMq()
+                .AddJwtBearerAuthentication();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -45,6 +48,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
