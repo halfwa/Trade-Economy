@@ -1,6 +1,7 @@
 using MassTransit;
 using MassTransit.Definition;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Trade.Catalog.Service;
 using Trade.Catalog.Service.Entities;
 using Trade.Common;
 using Trade.Common.Identity;
@@ -25,6 +26,21 @@ builder.Services.AddMongo()
                 .AddMongoRepository<Item>("items")
                 .AddMassTransitWithRabbitMq()
                 .AddJwtBearerAuthentication();
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy(Policies.Read, policy =>
+    {
+        policy.RequireRole("Admin");
+        policy.RequireClaim("scope", "catalog.readaccess", "catalog.fullaccess");
+    });
+
+    options.AddPolicy(Policies.Write, policy =>
+    {
+        policy.RequireRole("Admin");
+        policy.RequireClaim("scope", "catalog.writeaccess", "catalog.fullaccess");
+    });
+});
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

@@ -1,4 +1,4 @@
-export const ApplicationName = 'PlayEconomy';
+export const ApplicationName = 'TradeEconomy';
 
 export const QueryParameterNames = {
   ReturnUrl: 'returnUrl',

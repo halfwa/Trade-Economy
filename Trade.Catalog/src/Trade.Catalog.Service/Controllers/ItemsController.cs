@@ -28,6 +28,7 @@ namespace Trade.Catalog.Service.Controllers
 
         // GET /items
         [HttpGet]
+        [Authorize(Policies.Read)]
         public async Task<ActionResult<IEnumerable<ItemDto>>> GetAsync()
         {
             var items = (await _itemsRepository.GetAllAsync())
@@ -38,6 +39,7 @@ namespace Trade.Catalog.Service.Controllers
 
         // GET /items/{id}
         [HttpGet("{id:guid}")]
+        [Authorize(Policies.Read)]
         public async Task<ActionResult<ItemDto>> GetByIdAsync(Guid id)
         {
             var item = await _itemsRepository.GetAsync(id);
@@ -52,6 +54,7 @@ namespace Trade.Catalog.Service.Controllers
 
         // POST /items
         [HttpPost]
+        [Authorize(Policies.Write)]
         public async Task<ActionResult<ItemDto>> PostAsync(CreateItemDto createItemDto)
         {
             var item = new Item 
@@ -71,6 +74,7 @@ namespace Trade.Catalog.Service.Controllers
 
         // PUT /items/{id}
         [HttpPut("{id:guid}")]
+        [Authorize(Policies.Write)]
         public async Task<IActionResult> PutAsync(Guid id, UpdateItemDto updateItemDto)
         {
             var existingItem = await _itemsRepository.GetAsync(id);
@@ -102,6 +106,7 @@ namespace Trade.Catalog.Service.Controllers
 
         // DELETE /items/{id}
         [HttpDelete("{id:guid}")]
+        [Authorize(Policies.Write)]
         public async Task<IActionResult> DeleteAsync(Guid id)
         {
             var item = await _itemsRepository.GetAsync(id);

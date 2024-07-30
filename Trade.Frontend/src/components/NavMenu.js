@@ -47,7 +47,7 @@ export class NavMenu extends Component
       <header>
         <Navbar bg="light" expand="lg">
           <Container>
-            <Navbar.Brand as={Link} to="/">Play Economy</Navbar.Brand>
+            <Navbar.Brand as={Link} to="/">Trade Economy</Navbar.Brand>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
               {this.checkAuthAndRenderMenuItems()}
@@ -98,7 +98,7 @@ export class NavMenu extends Component
         </Nav>
       </Fragment>);
     }
-    else if (this.state.role === "Player")
+    else if (this.state.role === "Trader")
     {
       return (<Fragment>
         <Nav className="mr-auto">

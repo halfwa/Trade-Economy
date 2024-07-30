@@ -4,8 +4,10 @@ import { Route, Redirect } from 'react-router-dom'
 import { AuthorizationPaths, QueryParameterNames } from './ApiAuthorizationConstants'
 import authService from './AuthorizeService'
 
-export default class AuthorizeRoute extends Component {
-    constructor(props) {
+export default class AuthorizeRoute extends Component
+{
+    constructor(props)
+    {
         super(props);
 
         this.state = {
@@ -14,42 +16,52 @@ export default class AuthorizeRoute extends Component {
         };
     }
 
-    componentDidMount() {
+    componentDidMount()
+    {
         this._subscription = authService.subscribe(() => this.authenticationChanged());
         this.populateAuthenticationState();
     }
 
-    componentWillUnmount() {
+    componentWillUnmount()
+    {
         authService.unsubscribe(this._subscription);
     }
 
-    render() {
+    render()
+    {
         const { ready, authenticated } = this.state;
         var link = document.createElement("a");
         link.href = this.props.path;
         const returnUrl = `${link.protocol}//${link.host}${link.pathname}${link.search}${link.hash}`;
         const redirectUrl = `${AuthorizationPaths.Login}?${QueryParameterNames.ReturnUrl}=${encodeURI(returnUrl)}`
-        if (!ready) {
+        if (!ready)
+        {
             return <div></div>;
-        } else {
+        } else
+        {
             const { component: Component, ...rest } = this.props;
             return <Route {...rest}
-                render={(props) => {
-                    if (authenticated) {
+                render={(props) =>
+                {
+                    if (authenticated)
+                    {
                         return <Component {...props} />
-                    } else {
+                    } else
+                    {
                         return <Redirect to={redirectUrl} />
                     }
                 }} />
         }
     }
 
-    async populateAuthenticationState() {
+    async populateAuthenticationState()
+    {
         const authenticated = await authService.isAuthenticated();
         this.setState({ ready: true, authenticated });
     }
 
-    async authenticationChanged() {
+    async authenticationChanged()
+    {
         this.setState({ ready: false, authenticated: false });
         await this.populateAuthenticationState();
     }

@@ -13,6 +13,7 @@ using Trade.Identity.Service.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
 // Add services to the container.
 
 // MongoDb
@@ -43,7 +44,7 @@ builder.Services.AddIdentityServer(options =>
     .AddInMemoryClients(identityServerSettings.Clients)
     .AddInMemoryIdentityResources(identityServerSettings.IdentityResources);
 
-builder.Services.AddLocalApiAuthentication();
+builder.Services.AddLocalApiAuthentication();   
 builder.Services.AddHostedService<IdentitySeedHostedService>();
 
 builder.Services.AddControllers();
@@ -57,6 +58,13 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+
+    app.UseCors(corsBuillder =>
+    {
+        corsBuillder.WithOrigins(builder.Configuration["AllowedOrigin"])
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
 }
 
 app.UseHttpsRedirection();
@@ -64,7 +72,6 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseIdentityServer();
-
 app.UseAuthorization();
 
 app.MapControllers();

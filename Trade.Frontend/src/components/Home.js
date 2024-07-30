@@ -43,8 +43,8 @@ export class Home extends Component
   {
     return (
       <div>
-        <h1>Play Economy</h1>
-        <p>Welcome to the Play Economy website, a cloud native virtual economy system.</p>
+        <h1>Trade Economy</h1>
+        <p>Welcome to the Trade Economy website, a cloud native virtual economy system.</p>
         <p>To get started, yout can:</p>
         <ul>
           <li>Visit the <Link to={ApplicationPaths.StorePath}>Store</Link></li>

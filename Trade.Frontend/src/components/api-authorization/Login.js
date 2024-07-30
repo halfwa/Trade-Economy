@@ -8,8 +8,10 @@ import { LoginActions, QueryParameterNames, AuthorizationPaths } from './ApiAuth
 // This is the starting point for the login process. Any component that needs to authenticate
 // a user can simply perform a redirect to this component with a returnUrl query parameter and
 // let the component perform the login and return back to the return url.
-export class Login extends Component {
-    constructor(props) {
+export class Login extends Component
+{
+    constructor(props)
+    {
         super(props);
 
         this.state = {
@@ -17,9 +19,11 @@ export class Login extends Component {
         };
     }
 
-    componentDidMount() {
+    componentDidMount()
+    {
         const action = this.props.action;
-        switch (action) {
+        switch (action)
+        {
             case LoginActions.Login:
                 this.login(this.getReturnUrl());
                 break;
@@ -42,14 +46,18 @@ export class Login extends Component {
         }
     }
 
-    render() {
+    render()
+    {
         const action = this.props.action;
         const { message } = this.state;
 
-        if (!!message) {
+        if (!!message)
+        {
             return <div>{message}</div>
-        } else {
-            switch (action) {
+        } else
+        {
+            switch (action)
+            {
                 case LoginActions.Login:
                     return (<div>Processing login</div>);
                 case LoginActions.LoginCallback:
@@ -63,10 +71,12 @@ export class Login extends Component {
         }
     }
 
-    async login(returnUrl) {
+    async login(returnUrl)
+    {
         const state = { returnUrl };
         const result = await authService.signIn(state);
-        switch (result.status) {
+        switch (result.status)
+        {
             case AuthenticationResultStatus.Redirect:
                 break;
             case AuthenticationResultStatus.Success:
@@ -80,10 +90,12 @@ export class Login extends Component {
         }
     }
 
-    async processLoginCallback() {
+    async processLoginCallback()
+    {
         const url = window.location.href;
         const result = await authService.completeSignIn(url);
-        switch (result.status) {
+        switch (result.status)
+        {
             case AuthenticationResultStatus.Redirect:
                 // There should not be any redirects as the only time completeSignIn finishes
                 // is when we are doing a redirect sign in flow.
@@ -99,25 +111,30 @@ export class Login extends Component {
         }
     }
 
-    getReturnUrl(state) {
+    getReturnUrl(state)
+    {
         const params = new URLSearchParams(window.location.search);
         const fromQuery = params.get(QueryParameterNames.ReturnUrl);
-        if (fromQuery && !fromQuery.startsWith(`${window.location.origin}/`)) {
+        if (fromQuery && !fromQuery.startsWith(`${window.location.origin}/`))
+        {
             // This is an extra check to prevent open redirects.
             throw new Error("Invalid return url. The return url needs to have the same origin as the current page.")
         }
         return (state && state.returnUrl) || fromQuery || `${window.location.origin}/`;
     }
 
-    redirectToRegister() {
+    redirectToRegister()
+    {
         this.redirectToApiAuthorizationPath(window.IDENTITY_SERVICE_URL, `${AuthorizationPaths.IdentityRegisterPath}?${QueryParameterNames.ReturnUrl}=${encodeURI(AuthorizationPaths.Login)}`);
     }
 
-    redirectToProfile() {
+    redirectToProfile()
+    {
         this.redirectToApiAuthorizationPath(window.IDENTITY_SERVICE_URL, AuthorizationPaths.IdentityManagePath);
     }
 
-    redirectToApiAuthorizationPath(host, apiAuthorizationPath) {
+    redirectToApiAuthorizationPath(host, apiAuthorizationPath)
+    {
         const redirectUrl = `${host}${apiAuthorizationPath}`;
         // It's important that we do a replace here so that when the user hits the back arrow on the
         // browser he gets sent back to where it was on the app instead of to an endpoint on this
@@ -125,7 +142,8 @@ export class Login extends Component {
         window.location.replace(redirectUrl);
     }
 
-    navigateToReturnUrl(returnUrl) {
+    navigateToReturnUrl(returnUrl)
+    {
         // It's important that we do a replace here so that we remove the callback uri with the
         // fragment containing the tokens from the browser history.
         window.location.replace(returnUrl);

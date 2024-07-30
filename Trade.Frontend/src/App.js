@@ -22,10 +22,10 @@ export default class App extends Component
     return (
       <Layout>
         <Route exact path='/' component={Home} />
-        <Route path={ApplicationPaths.CatalogPath} component={Catalog} />
-        <Route path={ApplicationPaths.InventoryPath} component={Inventory} />
-        <Route path={ApplicationPaths.UsersPath} component={Users} />
-        <Route path={ApplicationPaths.StorePath} component={Store} />
+        <AuthorizeRoute path={ApplicationPaths.CatalogPath} component={Catalog} />
+        <AuthorizeRoute path={ApplicationPaths.InventoryPath} component={Inventory} />
+        <AuthorizeRoute path={ApplicationPaths.UsersPath} component={Users} />
+        <AuthorizeRoute path={ApplicationPaths.StorePath} component={Store} />
         <Route path={AuthorizationPaths.ApiAuthorizationPrefix} component={ApiAuthorizationRoutes} />
       </Layout>
     );
