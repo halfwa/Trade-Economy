@@ -1,4 +1,6 @@
-﻿namespace Trade.Inventory.Service.Exceptions
+﻿using System;
+
+namespace Trade.Inventory.Service.Exceptions
 {
     [Serializable]
     internal class UnknownItemException : Exception

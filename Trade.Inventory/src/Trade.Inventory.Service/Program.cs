@@ -8,6 +8,13 @@ using Trade.Common.MassTransit;
 using Trade.Common.Identity;
 using GreenPipes;
 using Trade.Inventory.Service.Exceptions;
+using Microsoft.AspNetCore.Builder;
+using System;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
+using System.Net.Http;
+using Microsoft.Extensions.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 

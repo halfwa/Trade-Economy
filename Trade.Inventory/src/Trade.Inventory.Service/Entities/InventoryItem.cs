@@ -1,4 +1,5 @@
-﻿using Trade.Common;
+﻿using System;
+using Trade.Common;
 
 namespace Trade.Inventory.Service.Entities
 {

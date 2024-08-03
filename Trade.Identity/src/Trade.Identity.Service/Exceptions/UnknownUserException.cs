@@ -11,6 +11,6 @@ namespace Trade.Identity.Service.Consumers
             UserId= userId;
         }
 
-        public Guid UserId { get; set; }
+        public Guid UserId { get; }
     }
 }

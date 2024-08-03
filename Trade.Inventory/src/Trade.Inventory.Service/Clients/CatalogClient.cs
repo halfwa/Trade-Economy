@@ -1,4 +1,8 @@
-﻿using Trade.Inventory.Service.Dtos;
+﻿using System.Collections.Generic;
+using System.Net.Http;
+using System.Net.Http.Json;
+using System.Threading.Tasks;
+using Trade.Inventory.Service.Dtos;
 
 namespace Trade.Inventory.Service.Clients
 {

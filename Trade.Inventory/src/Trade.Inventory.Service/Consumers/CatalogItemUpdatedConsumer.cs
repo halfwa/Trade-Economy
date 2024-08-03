@@ -1,4 +1,5 @@
 ﻿using MassTransit;
+using System.Threading.Tasks;
 using Trade.Catalog.Contracts;
 using Trade.Common;
 using Trade.Inventory.Service.Entities;

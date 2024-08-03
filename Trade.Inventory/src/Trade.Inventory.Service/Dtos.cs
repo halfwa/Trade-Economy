@@ -1,4 +1,6 @@
-﻿namespace Trade.Inventory.Service.Dtos
+﻿using System;
+
+namespace Trade.Inventory.Service.Dtos
 {
     public record GrantItemsDto(Guid UserId, Guid CatalogItemId, int Quantity);
 

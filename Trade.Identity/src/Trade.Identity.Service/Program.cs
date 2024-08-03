@@ -20,7 +20,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-// MongoDb
 BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
 var serviceSettings = builder.Configuration.GetSection(nameof(ServiceSettings)).Get<ServiceSettings>();
 var mongoDbSettings = builder.Configuration.GetSection(nameof(MongoDbSettings)).Get<MongoDbSettings>();

@@ -12,7 +12,7 @@ namespace Trade.Identity.Service.Exceptions
             GilToDebit = gilToDebit;    
         }
 
-        public Guid UserId { get; set; }
-        public decimal GilToDebit { get; set; }
+        public Guid UserId { get; }
+        public decimal GilToDebit { get; }
     }
 }
