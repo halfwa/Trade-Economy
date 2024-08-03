@@ -1,3 +1,4 @@
+using GreenPipes;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -6,8 +7,11 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 using System;
+using Trade.Common.MassTransit;
 using Trade.Common.Settings;
+using Trade.Identity.Service.Consumers;
 using Trade.Identity.Service.Entities;
+using Trade.Identity.Service.Exceptions;
 using Trade.Identity.Service.HostedServices;
 using Trade.Identity.Service.Settings;
 
@@ -31,6 +35,13 @@ builder.Services
         mongoDbSettings.ConnectionString,
         serviceSettings.ServiceName
     );
+
+builder.Services.AddMassTransitWithRabbitMq(retryConfigurator =>
+{
+    retryConfigurator.Interval(3, TimeSpan.FromSeconds(5));
+    retryConfigurator.Ignore(typeof(UnknownUserException));
+    retryConfigurator.Ignore(typeof(InsufficientFundsException));
+});
 
 builder.Services.AddIdentityServer(options =>
     {

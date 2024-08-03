@@ -22,3 +22,5 @@ OpenID Connect,
 JWT Bearer, user-secrets
 
 role-based & claim-based authorization
+
+ Orchestrated-based SAGA, State Machine

@@ -13,6 +13,6 @@ namespace Trade.Identity.Service.Dtos
 
     public record UpdateUserDto(
         [Required][EmailAddress] string Email,
-        [Range(0, 1_000_000)] decimal Gil
+        [Range(0, 1000000)] decimal Gil
     );
 }

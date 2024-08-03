@@ -45,7 +45,7 @@ namespace Trade.Identity.Service.HostedServices
 
                 await userManager.CreateAsync(adminUser, _settings.AdminUserPassword);
                 await userManager.AddToRoleAsync(adminUser, Roles.Admin);
-            }
+            }   
         }
 
         public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;

@@ -12,7 +12,11 @@
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.0" />
     <PackageReference Include="Microsoft.Visualstudio.Web.Codegeneration.Design" Version="8.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
-    <PackageReference Include="Trade.Common" Version="1.0.3" />
+    <PackageReference Include="Trade.Common" Version="1.0.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Trade.Identity.Contracts\Trade.Identity.Contracts.csproj" />
   </ItemGroup>
 
 </Project>

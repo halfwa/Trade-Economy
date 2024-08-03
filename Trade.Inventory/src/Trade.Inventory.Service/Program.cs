@@ -6,6 +6,8 @@ using Polly.Timeout;
 using Trade.Common.MongoDB;
 using Trade.Common.MassTransit;
 using Trade.Common.Identity;
+using GreenPipes;
+using Trade.Inventory.Service.Exceptions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,7 +24,11 @@ var serviceSettings = builder.Configuration.GetSection(nameof(ServiceSettings)).
 builder.Services.AddMongo()
                 .AddMongoRepository<InventoryItem>("inventoryItems")
                 .AddMongoRepository<CatalogItem>("catalogItems")
-                .AddMassTransitWithRabbitMq()
+                .AddMassTransitWithRabbitMq(retryConfigurator =>
+                {
+                    retryConfigurator.Interval(3, TimeSpan.FromSeconds(5));
+                    retryConfigurator.Ignore(typeof(UnknownItemException));
+                })
                 .AddJwtBearerAuthentication();
 
 AddCatalogClient(builder.Services);
