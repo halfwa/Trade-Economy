@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using Trade.Exchanger.Service.Contracts;
 using Trade.Exchanger.Service.Dtos;
+using Trade.Exchanger.Service.StateMachines;
 
 namespace Trade.Exchanger.Service.Controllers
 {
@@ -14,9 +15,36 @@ namespace Trade.Exchanger.Service.Controllers
     public class PurchaseController: ControllerBase
     {
         private readonly IPublishEndpoint _publishEndpoint;
-        public PurchaseController(IPublishEndpoint publishEndpoint)
+        private readonly IRequestClient<GetPurchaseState> _purchaseClient;
+
+        public PurchaseController(
+            IPublishEndpoint publishEndpoint, 
+            IRequestClient<GetPurchaseState> purchaseClient)
         {
             _publishEndpoint = publishEndpoint;
+            _purchaseClient = purchaseClient;
+        }
+
+        [HttpGet("status/{correlationId}")]
+        public async Task<ActionResult> GetStatusAsync(Guid correlationId)
+        {
+            var response = await _purchaseClient.GetResponse<PurchaseState>(
+                new GetPurchaseState(correlationId));
+
+            var purchaseState = response.Message;
+
+            var purchase = new PurchaseDto(
+                purchaseState.UserId,
+                purchaseState.ItemId,
+                purchaseState.PurchaseTotal,
+                purchaseState.Quantity,
+                purchaseState.CurrentState,
+                purchaseState.ErrorMessage,
+                purchaseState.Received,
+                purchaseState.LastUpdated
+            );
+
+            return Ok(purchase);
         }
 
         [HttpPost]
@@ -34,7 +62,7 @@ namespace Trade.Exchanger.Service.Controllers
 
             await _publishEndpoint.Publish(message);
 
-            return Accepted();
+            return AcceptedAtAction(nameof(GetStatusAsync), new { correlationId }, new { correlationId });
         }
     }
 }

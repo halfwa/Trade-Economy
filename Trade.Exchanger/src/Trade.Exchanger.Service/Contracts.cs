@@ -5,3 +5,5 @@ public record PurchaseRequested(
     Guid ItemId,
     int Quantity,
     Guid CorrelationId);
+
+public record GetPurchaseState(Guid CorrelationId);

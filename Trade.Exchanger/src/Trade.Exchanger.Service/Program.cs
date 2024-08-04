@@ -1,8 +1,11 @@
 using MassTransit;
+using System.Reflection;
+using System.Text.Json.Serialization;
 using Trade.Common.Identity;
 using Trade.Common.MassTransit;
 using Trade.Common.MongoDB;
 using Trade.Common.Settings;
+using Trade.Exchanger.Service.Entities;
 using Trade.Exchanger.Service.StateMachines;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,11 +13,19 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services
+    .AddMongoRepository<CatalogItem>("catalogItems")
     .AddMongo()
     .AddJwtBearerAuthentication();
 AddMassTransit(builder);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    options.SuppressAsyncSuffixInActionNames = false;
+})
+.AddJsonOptions(options => options.JsonSerializerOptions.DefaultIgnoreCondition =
+    JsonIgnoreCondition.WhenWritingNull);
+    
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -42,6 +53,7 @@ static void AddMassTransit(WebApplicationBuilder builder)
     builder.Services.AddMassTransit(configure =>
     {
         configure.UsingTradeEconomyRabbitMq();
+        configure.AddConsumers(Assembly.GetEntryAssembly());
         configure.AddSagaStateMachine<PurchaseStateMachine, PurchaseState>()
             .MongoDbRepository(r =>
             {
@@ -56,4 +68,5 @@ static void AddMassTransit(WebApplicationBuilder builder)
     });
 
     builder.Services.AddMassTransitHostedService();
+    builder.Services.AddGenericRequestClient();
 }

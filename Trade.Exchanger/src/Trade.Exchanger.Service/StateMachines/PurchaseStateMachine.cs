@@ -11,17 +11,20 @@ namespace Trade.Exchanger.Service.StateMachines
         public State Faulted { get; }
 
         public Event<PurchaseRequested> PurchaseRequested { get; }
+        public Event<GetPurchaseState> GetPurchaseState { get; }
 
         public PurchaseStateMachine()
         {
             InstanceState(state => state.CurrentState);
             ConfigureEvents();
             ConfigureInitialState();
+            ConfigureAny();
         }
 
         private void ConfigureEvents()
         {
             Event(() => PurchaseRequested);
+            Event(() => GetPurchaseState);
         }
 
         private void ConfigureInitialState()
@@ -37,6 +40,14 @@ namespace Trade.Exchanger.Service.StateMachines
                         context.Instance.LastUpdated = context.Instance.Received;
                     })
                     .TransitionTo(Accepted)
+            );
+        }
+
+        private void ConfigureAny()
+        {
+            DuringAny(
+                When(GetPurchaseState)
+                    .Respond(x => x.Instance)
             );
         }
     }
