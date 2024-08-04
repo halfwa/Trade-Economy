@@ -1,3 +1,4 @@
+using GreenPipes;
 using MassTransit;
 using System.Reflection;
 using System.Text.Json.Serialization;
@@ -6,7 +7,10 @@ using Trade.Common.MassTransit;
 using Trade.Common.MongoDB;
 using Trade.Common.Settings;
 using Trade.Exchanger.Service.Entities;
+using Trade.Exchanger.Service.Exceptions;
+using Trade.Exchanger.Service.Settings;
 using Trade.Exchanger.Service.StateMachines;
+using Trade.Inventory.Contracts;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -52,7 +56,12 @@ static void AddMassTransit(WebApplicationBuilder builder)
 {
     builder.Services.AddMassTransit(configure =>
     {
-        configure.UsingTradeEconomyRabbitMq();
+        configure.UsingTradeEconomyRabbitMq(retryConfiguration =>
+        {
+            retryConfiguration.Interval(3, TimeSpan.FromSeconds(5));
+            retryConfiguration.Ignore(typeof(UnknownItemException));
+        });
+
         configure.AddConsumers(Assembly.GetEntryAssembly());
         configure.AddSagaStateMachine<PurchaseStateMachine, PurchaseState>()
             .MongoDbRepository(r =>
@@ -66,6 +75,12 @@ static void AddMassTransit(WebApplicationBuilder builder)
                 r.DatabaseName = serviceSettings.ServiceName;
             });
     });
+
+
+    var queueSettings = builder.Configuration.GetSection(nameof(QueueSettings))
+                                                            .Get<QueueSettings>();
+
+    EndpointConvention.Map<GrantItems>(new Uri(queueSettings.GrantItemsQueueAddress));
 
     builder.Services.AddMassTransitHostedService();
     builder.Services.AddGenericRequestClient();

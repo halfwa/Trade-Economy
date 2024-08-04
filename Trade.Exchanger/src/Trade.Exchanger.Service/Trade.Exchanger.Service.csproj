@@ -14,6 +14,7 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
     <PackageReference Include="Trade.Catalog.Contracts" Version="1.0.1" />
     <PackageReference Include="Trade.Common" Version="1.0.5" />
+    <PackageReference Include="Trade.Inventory.Contracts" Version="1.0.0" />
   </ItemGroup>
 
   <ItemGroup>
