@@ -10,6 +10,7 @@ using Trade.Exchanger.Service.Entities;
 using Trade.Exchanger.Service.Exceptions;
 using Trade.Exchanger.Service.Settings;
 using Trade.Exchanger.Service.StateMachines;
+using Trade.Identity.Contracts;
 using Trade.Inventory.Contracts;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -84,6 +85,7 @@ static void AddMassTransit(WebApplicationBuilder builder)
                                                             .Get<QueueSettings>();
 
     EndpointConvention.Map<GrantItems>(new Uri(queueSettings.GrantItemsQueueAddress));
+    EndpointConvention.Map<DebitGil>(new Uri(queueSettings.DebitGilQueueAddress));
 
     builder.Services.AddMassTransitHostedService();
     builder.Services.AddGenericRequestClient();

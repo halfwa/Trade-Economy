@@ -1,6 +1,7 @@
 ﻿using Automatonymous;
 using Trade.Exchanger.Service.Activities;
 using Trade.Exchanger.Service.Contracts;
+using Trade.Identity.Contracts;
 using Trade.Inventory.Contracts;
 
 namespace Trade.Exchanger.Service.StateMachines
@@ -15,7 +16,7 @@ namespace Trade.Exchanger.Service.StateMachines
         public Event<PurchaseRequested> PurchaseRequested { get; }
         public Event<GetPurchaseState> GetPurchaseState { get; }
         public Event<InventoryItemsGranted> InventoryItemsGranted { get; }
-
+        public Event<GilDebited> GilDebited { get; }
 
         public PurchaseStateMachine()
         {
@@ -24,6 +25,7 @@ namespace Trade.Exchanger.Service.StateMachines
             ConfigureInitialState();
             ConfigureAny();
             ConfigureAccepted();
+            ConfigureItemsGranted();
         }
 
         private void ConfigureEvents()
@@ -31,6 +33,7 @@ namespace Trade.Exchanger.Service.StateMachines
             Event(() => PurchaseRequested);
             Event(() => GetPurchaseState);
             Event(() => InventoryItemsGranted);
+            Event(() => GilDebited);
         }
 
         private void ConfigureInitialState()
@@ -71,8 +74,26 @@ namespace Trade.Exchanger.Service.StateMachines
                     {
                         context.Instance.LastUpdated = DateTimeOffset.UtcNow;
                     })
-                    .TransitionTo(ItemsGranted));
+                    .Send(context => new DebitGil(
+                        context.Instance.UserId,
+                        context.Instance.PurchaseTotal.Value, 
+                        context.Instance.CorrelationId
+                    ))
+                    .TransitionTo(ItemsGranted)
+            );
 
+        }
+
+        private void ConfigureItemsGranted()
+        {
+            During(ItemsGranted,
+                When(GilDebited)
+                    .Then(context =>
+                    {
+                        context.Instance.LastUpdated = DateTimeOffset.UtcNow;
+                    })
+                    .TransitionTo(Completed)
+            );
         }
 
         private void ConfigureAny()
