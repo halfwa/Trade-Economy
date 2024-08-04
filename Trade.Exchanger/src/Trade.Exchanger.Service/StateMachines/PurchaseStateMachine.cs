@@ -51,7 +51,7 @@ namespace Trade.Exchanger.Service.StateMachines
                         context.Instance.ItemId,
                         context.Instance.Quantity,
                         context.Instance.CorrelationId
-                        ))
+                    ))
                     .TransitionTo(Accepted)
                     .Catch<Exception>(ex => ex.
                         Then(context =>

@@ -23,4 +23,5 @@ JWT Bearer, user-secrets
 
 role-based & claim-based authorization
 
- Orchestrated-based SAGA, State Machine
+ Orchestrated-based SAGA, MassTransit State Machine, Outbox
+

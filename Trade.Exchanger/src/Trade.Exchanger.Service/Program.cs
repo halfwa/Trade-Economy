@@ -63,7 +63,10 @@ static void AddMassTransit(WebApplicationBuilder builder)
         });
 
         configure.AddConsumers(Assembly.GetEntryAssembly());
-        configure.AddSagaStateMachine<PurchaseStateMachine, PurchaseState>()
+        configure.AddSagaStateMachine<PurchaseStateMachine, PurchaseState>(sagaConfigurator =>
+        {
+            sagaConfigurator.UseInMemoryOutbox();
+        })
             .MongoDbRepository(r =>
             {
                 var serviceSettings = builder.Configuration.GetSection(nameof(ServiceSettings))
