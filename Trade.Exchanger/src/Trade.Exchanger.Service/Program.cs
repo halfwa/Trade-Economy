@@ -86,6 +86,7 @@ static void AddMassTransit(WebApplicationBuilder builder)
 
     EndpointConvention.Map<GrantItems>(new Uri(queueSettings.GrantItemsQueueAddress));
     EndpointConvention.Map<DebitGil>(new Uri(queueSettings.DebitGilQueueAddress));
+    EndpointConvention.Map<DebitGil>(new Uri(queueSettings.SubtractItemsQueueAddress));
 
     builder.Services.AddMassTransitHostedService();
     builder.Services.AddGenericRequestClient();
