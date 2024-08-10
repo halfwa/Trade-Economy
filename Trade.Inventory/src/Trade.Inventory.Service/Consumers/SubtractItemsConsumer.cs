@@ -36,7 +36,14 @@ namespace Trade.Inventory.Service.Consumers
 
             if (inventoryItem != null)
             {
+                if (inventoryItem.MessageIds.Contains(context.MessageId.Value))
+                {
+                    await context.Publish(new InventoryItemsSubtracted(message.CorrelationId));
+                    return;
+                }
+
                 inventoryItem.Quantity -= message.Quantity;
+                inventoryItem.MessageIds.Add(context.MessageId.Value);
                 await _inventoryItemsRepository.UpdateAsync(inventoryItem);
             }
 

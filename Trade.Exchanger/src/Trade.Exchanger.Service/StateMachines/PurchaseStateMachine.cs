@@ -30,6 +30,7 @@ namespace Trade.Exchanger.Service.StateMachines
             ConfigureAccepted();
             ConfigureItemsGranted();
             ConfigureFaulted();
+            ConfigureCompleted();
         }
 
         private void ConfigureEvents()
@@ -77,6 +78,7 @@ namespace Trade.Exchanger.Service.StateMachines
         private void ConfigureAccepted()
         {
             During(Accepted,
+                Ignore(PurchaseRequested),
                 When(InventoryItemsGranted)
                     .Then(context =>
                     {
@@ -102,6 +104,8 @@ namespace Trade.Exchanger.Service.StateMachines
         private void ConfigureItemsGranted()
         {
             During(ItemsGranted,
+                Ignore(PurchaseRequested),
+                Ignore(InventoryItemsGranted),
                 When(GilDebited)
                     .Then(context =>
                     {
@@ -122,6 +126,15 @@ namespace Trade.Exchanger.Service.StateMachines
                         context.Instance.LastUpdated = DateTimeOffset.UtcNow;
                     })
                     .TransitionTo(Faulted)
+            );
+        }
+
+        private void ConfigureCompleted()
+        {
+            During(Completed,
+               Ignore(PurchaseRequested),
+               Ignore(InventoryItemsGranted),
+               Ignore(GilDebited)
             );
         }
 

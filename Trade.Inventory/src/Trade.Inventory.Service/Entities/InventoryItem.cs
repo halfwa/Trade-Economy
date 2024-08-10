@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Trade.Common;
 
 namespace Trade.Inventory.Service.Entities
@@ -14,5 +15,7 @@ namespace Trade.Inventory.Service.Entities
         public int Quantity { get; set; }
 
         public DateTimeOffset AcquiredDate { get; set; }
+
+        public HashSet<Guid> MessageIds { get; set; } = new();
     }
 }
