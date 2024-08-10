@@ -25,11 +25,11 @@ namespace Trade.Exchanger.Service.Controllers
             _purchaseClient = purchaseClient;
         }
 
-        [HttpGet("status/{correlationId}")]
-        public async Task<ActionResult> GetStatusAsync(Guid correlationId)
+        [HttpGet("status/{idempotencyId}")]
+        public async Task<ActionResult> GetStatusAsync(Guid idempotencyId)
         {
             var response = await _purchaseClient.GetResponse<PurchaseState>(
-                new GetPurchaseState(correlationId));
+                new GetPurchaseState(idempotencyId));
 
             var purchaseState = response.Message;
 
@@ -51,18 +51,20 @@ namespace Trade.Exchanger.Service.Controllers
         public async Task<IActionResult> PostAsync(SubmitPurchaseDto purchase)
         {
             var userId = User.FindFirstValue("sub");
-            var correlationId = Guid.NewGuid();
 
             var message = new PurchaseRequested(
                 Guid.Parse(userId),
                 purchase.ItemId.Value,
                 purchase.Quantity,
-                correlationId
+                purchase.IdempotencyId.Value
             );
 
             await _publishEndpoint.Publish(message);
 
-            return AcceptedAtAction(nameof(GetStatusAsync), new { correlationId }, new { correlationId });
+            return AcceptedAtAction(
+                nameof(GetStatusAsync), 
+                new { purchase.IdempotencyId }, 
+                new { purchase.IdempotencyId });
         }
     }
 }
