@@ -13,6 +13,7 @@ using Trade.Common.Settings;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+const string AllowedOriginSettings = "AllowedOrigin";
 
 builder.Services.AddControllers(options =>
 {
@@ -56,7 +57,7 @@ if (app.Environment.IsDevelopment())
 
     app.UseCors(cpBuilder =>
     {
-        cpBuilder.WithOrigins(builder.Configuration["AllowedOrigin"])
+        cpBuilder.WithOrigins(builder.Configuration[AllowedOriginSettings])
             .AllowAnyHeader()
             .AllowAnyHeader() ;
     });

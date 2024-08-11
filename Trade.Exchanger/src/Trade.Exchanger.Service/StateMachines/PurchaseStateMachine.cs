@@ -1,7 +1,9 @@
 ﻿using Automatonymous;
 using MassTransit;
+using Microsoft.AspNetCore.SignalR;
 using Trade.Exchanger.Service.Activities;
 using Trade.Exchanger.Service.Contracts;
+using Trade.Exchanger.Service.SignalR;
 using Trade.Identity.Contracts;
 using Trade.Inventory.Contracts;
 
@@ -9,6 +11,8 @@ namespace Trade.Exchanger.Service.StateMachines
 {
     public class PurchaseStateMachine: MassTransitStateMachine<PurchaseState>
     {
+        private readonly MessageHub _hub;
+
         public State Accepted { get; }
         public State ItemsGranted { get; }
         public State Completed { get; }
@@ -21,7 +25,7 @@ namespace Trade.Exchanger.Service.StateMachines
         public Event<Fault<GrantItems>> GrantItemsFaulted { get;}
         public Event<Fault<DebitGil>> DebitGilFaulted { get; }
 
-        public PurchaseStateMachine()
+        public PurchaseStateMachine(MessageHub hub)
         {
             InstanceState(state => state.CurrentState);
             ConfigureEvents();
@@ -31,6 +35,7 @@ namespace Trade.Exchanger.Service.StateMachines
             ConfigureItemsGranted();
             ConfigureFaulted();
             ConfigureCompleted();
+            _hub = hub;
         }
 
         private void ConfigureEvents()
@@ -71,7 +76,8 @@ namespace Trade.Exchanger.Service.StateMachines
                             context.Instance.ErrorMessage = context.Exception.Message;
                             context.Instance.LastUpdated = DateTimeOffset.UtcNow;
                         })
-                        .TransitionTo(Faulted))
+                        .TransitionTo(Faulted)
+                        .ThenAsync(async context => await _hub.SendStatusAsync(context.Instance)))
             );
         }
 
@@ -97,6 +103,7 @@ namespace Trade.Exchanger.Service.StateMachines
                         context.Instance.LastUpdated = DateTimeOffset.UtcNow;
                     })
                     .TransitionTo(Faulted)
+                    .ThenAsync(async context => await _hub.SendStatusAsync(context.Instance))
             );
 
         }
@@ -111,7 +118,8 @@ namespace Trade.Exchanger.Service.StateMachines
                     {
                         context.Instance.LastUpdated = DateTimeOffset.UtcNow;
                     })
-                    .TransitionTo(Completed),
+                    .TransitionTo(Completed)
+                    .ThenAsync(async context => await _hub.SendStatusAsync(context.Instance)),
                 When(DebitGilFaulted)
                     .Send(context => new SubtractItems
                     (
@@ -126,6 +134,7 @@ namespace Trade.Exchanger.Service.StateMachines
                         context.Instance.LastUpdated = DateTimeOffset.UtcNow;
                     })
                     .TransitionTo(Faulted)
+                    .ThenAsync(async context => await _hub.SendStatusAsync(context.Instance))
             );
         }
 

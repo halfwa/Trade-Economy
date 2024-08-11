@@ -1,5 +1,6 @@
 using GreenPipes;
 using MassTransit;
+using Microsoft.AspNetCore.SignalR;
 using System.Reflection;
 using System.Text.Json.Serialization;
 using Trade.Common.Identity;
@@ -9,6 +10,7 @@ using Trade.Common.Settings;
 using Trade.Exchanger.Service.Entities;
 using Trade.Exchanger.Service.Exceptions;
 using Trade.Exchanger.Service.Settings;
+using Trade.Exchanger.Service.SignalR;
 using Trade.Exchanger.Service.StateMachines;
 using Trade.Identity.Contracts;
 using Trade.Inventory.Contracts;
@@ -18,11 +20,11 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 const string AllowedOriginSettings = "AllowedOrigin";
 
-builder.Services
+builder.Services   
+    .AddMongo()
     .AddMongoRepository<CatalogItem>("catalogItems")
     .AddMongoRepository<InventoryItem>("inventoryItems")
-    .AddMongoRepository<ApplicationUser>("users")
-    .AddMongo()
+    .AddMongoRepository<ApplicationUser>("users") 
     .AddJwtBearerAuthentication();
 AddMassTransit(builder);
 
@@ -32,7 +34,10 @@ builder.Services.AddControllers(options =>
 })
 .AddJsonOptions(options => options.JsonSerializerOptions.DefaultIgnoreCondition =
     JsonIgnoreCondition.WhenWritingNull);
-    
+
+builder.Services.AddSingleton<IUserIdProvider, UserIdProvider>()
+        .AddSingleton<MessageHub>()
+        .AddSignalR();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -44,12 +49,14 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    var test = builder.Configuration[AllowedOriginSettings];
 
     app.UseCors(corsBuilder =>
     {
         corsBuilder.WithOrigins(builder.Configuration[AllowedOriginSettings])
             .AllowAnyHeader()
-            .AllowAnyMethod();
+            .AllowAnyMethod()
+            .AllowCredentials();
     });
 }
 
@@ -59,6 +66,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<MessageHub>("/messageHub");
 
 app.Run();
 

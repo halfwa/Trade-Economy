@@ -19,6 +19,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 
 // Add services to the container.
+const string AllowedOriginSettings = "AllowedOrigin";
 
 BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
 var serviceSettings = builder.Configuration.GetSection(nameof(ServiceSettings)).Get<ServiceSettings>();
@@ -71,7 +72,7 @@ if (app.Environment.IsDevelopment())
 
     app.UseCors(corsBuillder =>
     {
-        corsBuillder.WithOrigins(builder.Configuration["AllowedOrigin"])
+        corsBuillder.WithOrigins(builder.Configuration[AllowedOriginSettings])
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
