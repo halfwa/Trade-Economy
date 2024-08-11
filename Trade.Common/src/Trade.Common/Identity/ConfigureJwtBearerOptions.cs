@@ -13,6 +13,9 @@ namespace Trade.Common.Identity
 {
     public class ConfigureJwtBearerOptions: IConfigureNamedOptions<JwtBearerOptions>
     {
+        private const string AccessTokenParametr = "access_token";
+        private const string MessageHubPath = "/messageHub";
+
         private readonly IConfiguration _configuration;
 
         public ConfigureJwtBearerOptions(IConfiguration configuration)
@@ -34,6 +37,23 @@ namespace Trade.Common.Identity
                 {
                     NameClaimType = "name",
                     RoleClaimType = "role",
+                };
+
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Query[AccessTokenParametr];
+                        var path = context.HttpContext.Request.Path;
+
+                        if (!string.IsNullOrEmpty(accessToken) &&
+                            path.StartsWithSegments(MessageHubPath))
+                        {
+                            context.Token = accessToken;
+                        }
+
+                        return Task.CompletedTask;
+                    }
                 };
             }
         }
