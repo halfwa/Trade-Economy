@@ -225,7 +225,7 @@ export class AuthorizeService
             client_id: "frontend",
             redirect_uri: `${hostAndPort}${AuthorizationPaths.LoginCallback}`,
             response_type: "code",
-            scope: "openid profile catalog.fullaccess inventory.fullaccess IdentityServerApi roles",
+            scope: "openid profile catalog.fullaccess inventory.fullaccess exchanger.fullaccess IdentityServerApi roles",
             post_logout_redirect_uri: `${hostAndPort}${AuthorizationPaths.LogOutCallback}`
         };
 

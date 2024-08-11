@@ -59,7 +59,7 @@ export class Home extends Component
               <li><a href={`${window.CATALOG_SERVICE_URL}/swagger`} target="_blank" rel="noreferrer">Catalog service</a></li>
               <li><a href={`${window.INVENTORY_SERVICE_URL}/swagger`} target="_blank" rel="noreferrer">Inventory service</a></li>
               <li><a href={`${window.IDENTITY_SERVICE_URL}/swagger`} target="_blank" rel="noreferrer">Identity service</a></li>
-              <li><a href={`${window.TRADING_SERVICE_URL}/swagger`} target="_blank" rel="noreferrer">Trading service</a></li>
+              <li><a href={`${window.EXCHANGER_SERVICE_URL}/swagger`} target="_blank" rel="noreferrer">Trading service</a></li>
             </ul>
           </li>
         </ul>

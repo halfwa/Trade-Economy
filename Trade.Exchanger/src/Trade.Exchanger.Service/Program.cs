@@ -16,9 +16,12 @@ using Trade.Inventory.Contracts;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+const string AllowedOriginSettings = "AllowedOrigin";
 
 builder.Services
     .AddMongoRepository<CatalogItem>("catalogItems")
+    .AddMongoRepository<InventoryItem>("inventoryItems")
+    .AddMongoRepository<ApplicationUser>("users")
     .AddMongo()
     .AddJwtBearerAuthentication();
 AddMassTransit(builder);
@@ -41,6 +44,13 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+
+    app.UseCors(corsBuilder =>
+    {
+        corsBuilder.WithOrigins(builder.Configuration[AllowedOriginSettings])
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
 }
 
 app.UseHttpsRedirection();
@@ -53,7 +63,7 @@ app.MapControllers();
 app.Run();
 
 
-static void AddMassTransit(WebApplicationBuilder builder)
+ void AddMassTransit(WebApplicationBuilder builder)
 {
     builder.Services.AddMassTransit(configure =>
     {
@@ -79,7 +89,6 @@ static void AddMassTransit(WebApplicationBuilder builder)
                 r.DatabaseName = serviceSettings.ServiceName;
             });
     });
-
 
     var queueSettings = builder.Configuration.GetSection(nameof(QueueSettings))
                                                             .Get<QueueSettings>();

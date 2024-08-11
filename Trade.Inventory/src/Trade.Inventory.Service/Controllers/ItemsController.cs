@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using MassTransit;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -7,6 +8,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Trade.Common;
+using Trade.Inventory.Contracts;
 using Trade.Inventory.Service.Clients;
 using Trade.Inventory.Service.Dtos;
 using Trade.Inventory.Service.Entities;
@@ -21,13 +23,16 @@ namespace Trade.Inventory.Service.Controllers
 
         private readonly IRepository<InventoryItem> _inventoryItemsRepository;
         private readonly IRepository<CatalogItem> _catalogItemsRepository;
+        private readonly IPublishEndpoint _publishEndpoint;
 
         public ItemsController(
             IRepository<InventoryItem> inventoryItemsRepository,
-            IRepository<CatalogItem> catalogItemsRepository)
+            IRepository<CatalogItem> catalogItemsRepository,
+            IPublishEndpoint publishEndpoint)
         {
             _inventoryItemsRepository = inventoryItemsRepository;
             _catalogItemsRepository = catalogItemsRepository;
+            _publishEndpoint = publishEndpoint;
         }
 
 
@@ -87,6 +92,11 @@ namespace Trade.Inventory.Service.Controllers
                 inventoryItem.Quantity += grantItemsDto.Quantity;
                 await _inventoryItemsRepository.UpdateAsync(inventoryItem);
             }
+
+            await _publishEndpoint.Publish(new InventoryItemUpdated(
+                inventoryItem.UserId,
+                inventoryItem.CatalogItemId,
+                inventoryItem.Quantity));
 
             return Ok();
         }

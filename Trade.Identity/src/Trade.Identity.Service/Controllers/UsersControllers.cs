@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using MassTransit;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Trade.Identity.Contracts;
 using Trade.Identity.Service.Dtos;
 using Trade.Identity.Service.Entities;
 using static Duende.IdentityServer.IdentityServerConstants;
@@ -17,10 +19,14 @@ namespace Trade.Identity.Service.Controllers
     public class UsersControllers: ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IPublishEndpoint _publishEndpoint;
 
-        public UsersControllers(UserManager<ApplicationUser> userManager)
+        public UsersControllers(
+            UserManager<ApplicationUser> userManager, 
+            IPublishEndpoint publishEndpoint)
         {
             _userManager = userManager;
+            _publishEndpoint = publishEndpoint;
         }
 
         [HttpGet]
@@ -63,6 +69,8 @@ namespace Trade.Identity.Service.Controllers
 
             await _userManager.UpdateAsync(user);
 
+            await _publishEndpoint.Publish(new UserUpdated(user.Id, user.Email, user.Gil));
+
             return NoContent();
         }
 
@@ -77,6 +85,8 @@ namespace Trade.Identity.Service.Controllers
             }
 
             await _userManager.DeleteAsync(user);
+
+            await _publishEndpoint.Publish(new UserUpdated(user.Id, user.Email, 0));
 
             return NoContent();
         }

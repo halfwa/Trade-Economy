@@ -20,7 +20,7 @@ export default class PurchaseForm extends React.Component
     }
 
     connection = new HubConnectionBuilder()
-        .withUrl(`${window.TRADING_SERVICE_URL}/messageHub`, { accessTokenFactory: () => authService.getAccessToken() })
+        .withUrl(`${window.EXCHANGER_SERVICE_URL}/messageHub`, { accessTokenFactory: () => authService.getAccessToken() })
         .withAutomaticReconnect()
         .configureLogging(LogLevel.Information)
         .build();

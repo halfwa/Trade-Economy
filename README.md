@@ -27,3 +27,4 @@ Orchestrated-based SAGA, MassTransit State Machine, Outbox
 
 Compensating transactions in a saga, Idempotency
 
+Real-time updates SingalR

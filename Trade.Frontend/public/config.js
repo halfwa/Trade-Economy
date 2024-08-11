@@ -16,8 +16,8 @@ window.INVENTORY_ITEMS_API_URL = `${window.INVENTORY_SERVICE_URL}/items`
 window.IDENTITY_SERVICE_URL = 'https://localhost:5003'
 window.USERS_API_URL = `${window.IDENTITY_SERVICE_URL}/users`
 
-// window.TRADING_SERVICE_URL = 'https://localhost:5007'
-// window.PURCHASE_API_URL = `${window.TRADING_SERVICE_URL}/purchase`
-// window.STORE_API_URL = `${window.TRADING_SERVICE_URL}/store`
+window.EXCHANGER_SERVICE_URL = 'https://localhost:5007'
+window.PURCHASE_API_URL = `${window.EXCHANGER_SERVICE_URL}/purchase`
+window.STORE_API_URL = `${window.EXCHANGER_SERVICE_URL}/store`
 
 window.RABBITMQ_URL = 'http://localhost:15672'
